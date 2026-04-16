@@ -182,6 +182,8 @@
         <div class="header-motto"></div>
         <div class="header-inner">
          <div class="user-info">
+                <!-- 移动端左侧侧栏打开箭头 -->
+                <button id="dc-mobile-open-btn" title="打开会话列表"><i class="fas fa-chevron-left"></i></button>
                 <div id="partner-name" class="username">
                     梦角
                 </div>
@@ -200,7 +202,6 @@
                 <button id="daily-greeting-btn" class="action-btn" title="今日公告" onclick="reopenDailyGreeting()"><i class="fas fa-newspaper"></i></button>
                 <button id="theme-toggle" class="action-btn" title="切换主题"><i class="fas fa-moon"></i></button>
                 <button id="settings-btn" class="action-btn" title="设置"><i class="fas fa-cog"></i></button>
-                <button id="dc-more-btn" class="action-btn" title="更多操作"><i class="fas fa-ellipsis-v"></i></button>
             </div>
              <div class="user-info">
                 <div class="username" id="my-name">
@@ -413,11 +414,8 @@
         </div>
     </div>
 
-    <!-- 右上角三点菜单（位于header内部，JS动态注入） -->
-    <div id="dc-dots-menu" class="dc-dots-menu-hidden">
-        <button id="dc-dots-rename"><i class="fas fa-pen"></i> 重命名会话</button>
-        <button id="dc-dots-delete"><i class="fas fa-trash"></i> 删除会话</button>
-    </div>
+    <!-- 移动端侧栏遮罩 -->
+    <div id="dc-mobile-overlay"></div>
 
     <div class="modal" id="edit-modal" style="z-index:3000;">
         <div class="modal-content">

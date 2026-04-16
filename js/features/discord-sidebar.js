@@ -194,7 +194,10 @@
             item.appendChild(infoDiv);
 
             // 点击切换会话
-            item.addEventListener('click', () => _switchSession(session.id));
+            item.addEventListener('click', () => {
+                _closeMobileSidebar();
+                _switchSession(session.id);
+            });
 
             list.appendChild(item);
         }
@@ -260,21 +263,8 @@
     }
 
     /* ───────────────────────────────────────────────
-       三点菜单
+       重命名 / 删除
     ─────────────────────────────────────────────── */
-    function _toggleDotsMenu() {
-        const menu = document.getElementById('dc-dots-menu');
-        if (!menu) return;
-        const hidden = menu.classList.contains('dc-dots-menu-hidden');
-        menu.classList.toggle('dc-dots-menu-hidden', !hidden);
-    }
-
-    function _hideDotsMenu() {
-        const menu = document.getElementById('dc-dots-menu');
-        if (menu) menu.classList.add('dc-dots-menu-hidden');
-    }
-
-    /* 重命名当前会话 */
     function _renameCurrentSession() {
         const targetId = _popupSessionId || SESSION_ID;
         const session = sessionList.find(s => s.id === targetId);
@@ -332,6 +322,27 @@
     }
 
     /* ───────────────────────────────────────────────
+       移动端侧栏开关
+    ─────────────────────────────────────────────── */
+    function _openMobileSidebar() {
+        const rail    = document.getElementById('dc-icon-rail');
+        const sidebar = document.getElementById('dc-sidebar');
+        const overlay = document.getElementById('dc-mobile-overlay');
+        if (rail)    rail.classList.add('dc-mobile-open');
+        if (sidebar) sidebar.classList.add('dc-mobile-open');
+        if (overlay) overlay.classList.add('dc-mobile-overlay-show');
+    }
+
+    function _closeMobileSidebar() {
+        const rail    = document.getElementById('dc-icon-rail');
+        const sidebar = document.getElementById('dc-sidebar');
+        const overlay = document.getElementById('dc-mobile-overlay');
+        if (rail)    rail.classList.remove('dc-mobile-open');
+        if (sidebar) sidebar.classList.remove('dc-mobile-open');
+        if (overlay) overlay.classList.remove('dc-mobile-overlay-show');
+    }
+
+    /* ───────────────────────────────────────────────
        绑定事件监听
     ─────────────────────────────────────────────── */
     function _bindEvents() {
@@ -371,29 +382,13 @@
             }
         });
 
-        // 三点菜单按钮
-        const moreBtn = document.getElementById('dc-more-btn');
-        if (moreBtn) {
-            moreBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                _toggleDotsMenu();
-            });
-        }
+        // 移动端：左箭头打开侧栏
+        const mobileOpenBtn = document.getElementById('dc-mobile-open-btn');
+        if (mobileOpenBtn) mobileOpenBtn.addEventListener('click', _openMobileSidebar);
 
-        // 三点菜单：重命名
-        const renameBtn = document.getElementById('dc-dots-rename');
-        if (renameBtn) renameBtn.addEventListener('click', _renameCurrentSession);
-
-        // 三点菜单：删除
-        const deleteBtn = document.getElementById('dc-dots-delete');
-        if (deleteBtn) deleteBtn.addEventListener('click', _deleteCurrentSession);
-
-        // 点击菜单外关闭
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#dc-dots-menu') && !e.target.closest('#dc-more-btn')) {
-                _hideDotsMenu();
-            }
-        });
+        // 移动端：遮罩点击关闭侧栏
+        const overlay = document.getElementById('dc-mobile-overlay');
+        if (overlay) overlay.addEventListener('click', _closeMobileSidebar);
     }
 
     /* 挂载到 window，供外部调用刷新 */
