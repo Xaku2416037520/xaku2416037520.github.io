@@ -221,9 +221,14 @@
     /* ───────────────────────────────────────────────
        头像弹窗
     ─────────────────────────────────────────────── */
+    // 记录当前弹窗对应的会话
+    let _popupSessionId = null;
+
     function _showAvatarPopup(session, avatarSrc, partnerName) {
         const popup = document.getElementById('dc-avatar-popup');
         if (!popup) return;
+
+        _popupSessionId = session.id;
 
         const avatarEl = document.getElementById('dc-avatar-popup-avatar');
         const nameEl   = document.getElementById('dc-avatar-popup-name');
@@ -271,8 +276,8 @@
 
     /* 重命名当前会话 */
     function _renameCurrentSession() {
-        _hideDotsMenu();
-        const session = sessionList.find(s => s.id === SESSION_ID);
+        const targetId = _popupSessionId || SESSION_ID;
+        const session = sessionList.find(s => s.id === targetId);
         if (!session) return;
         const newName = prompt('输入新的会话名称:', session.name);
         if (newName && newName.trim()) {
@@ -286,28 +291,27 @@
 
     /* 删除当前会话 */
     function _deleteCurrentSession() {
-        _hideDotsMenu();
+        const targetId = _popupSessionId || SESSION_ID;
         if (sessionList.length <= 1) {
             if (typeof showNotification === 'function') showNotification('无法删除最后一个会话', 'warning');
             return;
         }
         if (!confirm('确定要删除此会话及其所有聊天记录吗？此操作不可恢复')) return;
 
-        const deletedId = SESSION_ID;
-        sessionList = sessionList.filter(s => s.id !== deletedId);
+        sessionList = sessionList.filter(s => s.id !== targetId);
         localforage.setItem(`${APP_PREFIX}sessionList`, sessionList);
 
         // 清除存储
         try {
             Object.keys(localStorage).forEach(key => {
-                if (key.startsWith(`${APP_PREFIX}${deletedId}_`)) {
+                if (key.startsWith(`${APP_PREFIX}${targetId}_`)) {
                     try { localStorage.removeItem(key); } catch (_) {}
                 }
             });
         } catch (_) {}
         localforage.keys().then(keys => {
             keys.forEach(key => {
-                if (key.startsWith(`${APP_PREFIX}${deletedId}_`)) {
+                if (key.startsWith(`${APP_PREFIX}${targetId}_`)) {
                     localforage.removeItem(key).catch(() => {});
                 }
             });
@@ -342,6 +346,20 @@
         // 头像弹窗关闭
         const popupClose = document.getElementById('dc-avatar-popup-close');
         if (popupClose) popupClose.addEventListener('click', _hideAvatarPopup);
+
+        // 头像弹窗：重命名按钮
+        const popupRename = document.getElementById('dc-popup-rename');
+        if (popupRename) popupRename.addEventListener('click', () => {
+            _hideAvatarPopup();
+            _renameCurrentSession();
+        });
+
+        // 头像弹窗：删除按钮
+        const popupDelete = document.getElementById('dc-popup-delete');
+        if (popupDelete) popupDelete.addEventListener('click', () => {
+            _hideAvatarPopup();
+            _deleteCurrentSession();
+        });
 
         // 点击弹窗外关闭
         document.addEventListener('click', (e) => {
