@@ -355,7 +355,7 @@
         setTimeout(() => {
             if (rail)    rail.classList.remove('dc-mobile-closing');
             if (sidebar) sidebar.classList.remove('dc-mobile-closing');
-        }, 230);
+        }, 270);
     }
 
     /* ───────────────────────────────────────────────

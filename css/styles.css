@@ -11856,13 +11856,13 @@
             to   { opacity: 1; }
         }
 
-        /* ---- 侧栏默认隐藏（所有屏幕尺寸） ---- */
+        /* ---- 宽屏：侧栏始终显示（inline flex） ---- */
         #dc-icon-rail,
         #dc-sidebar {
-            display: none;
+            display: flex;
         }
 
-        /* 侧栏打开状态（所有屏幕尺寸） */
+        /* 侧栏打开状态（覆盖层，仅窄屏使用） */
         #dc-icon-rail.dc-mobile-open,
         #dc-sidebar.dc-mobile-open {
             display: flex !important;
@@ -11883,10 +11883,10 @@
             left: 0 !important;
             height: 100dvh !important;
             z-index: 9000 !important;
-            animation: dcSlideOutLeft 0.22s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+            animation: dcSlideOutLeft 0.26s cubic-bezier(0.22, 1, 0.36, 1) both !important;
         }
 
-        /* 遮罩层（所有屏幕尺寸） */
+        /* 遮罩层 */
         #dc-mobile-overlay {
             display: none;
             position: fixed;
@@ -11899,8 +11899,12 @@
             display: block;
         }
 
-        /* 窄屏：侧栏占满屏幕 */
+        /* 窄屏（≤768px）：侧栏隐藏，按钮触发覆盖层抽屉 */
         @media (max-width: 768px) {
+            #dc-icon-rail,
+            #dc-sidebar {
+                display: none;
+            }
             .input-area-wrapper {
                 left: 0 !important;
             }
