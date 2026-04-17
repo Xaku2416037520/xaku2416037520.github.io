@@ -234,9 +234,9 @@
                     </div>
                 </div>
                 <div class="header-actions">
-                    <button id="session-manager-btn" class="action-btn" title="会话管理"><i class="fas fa-comments"></i></button>
+                    <button id="session-manager-btn" class="action-btn" title="会话管理" style="display:none;"><i class="fas fa-comments"></i></button>
                     <button id="daily-greeting-btn" class="action-btn" title="今日公告" onclick="reopenDailyGreeting()"><i class="fas fa-newspaper"></i></button>
-                    <button id="theme-toggle" class="action-btn" title="切换主题"><i class="fas fa-moon"></i></button>
+                    <button id="call-toolbar-btn" class="action-btn" title="视频通话" onclick="if(window.callFeature&&typeof window.callFeature.startCall==='function')window.callFeature.startCall(false);"><i class="fas fa-video"></i></button>
                     <button id="settings-btn" class="action-btn" title="设置"><i class="fas fa-cog"></i></button>
                 </div>
                 <div class="user-info">
@@ -361,9 +361,6 @@
                     </button>
                     <button class="collapsed-extra-btn" title="塔罗占卜" onclick="(function(){document.getElementById('collapsed-extras-panel').style.display='none';document.getElementById('collapse-expand-btn').classList.remove('open');generateFortune();})();">
                         <i class="fas fa-star-and-crescent"></i>
-                    </button>
-                    <button class="collapsed-extra-btn" id="collapsed-call-btn" title="视频通话" onclick="(function(){document.getElementById('collapsed-extras-panel').style.display='none';document.getElementById('collapse-expand-btn').classList.remove('open');if(window.callFeature&&typeof window.callFeature.startCall==='function')window.callFeature.startCall(false);})();">
-                        <i class="fas fa-video"></i>
                     </button>
                     <button class="collapsed-extra-btn" title="退出收纳" onclick="window.exitCollapseMode && window.exitCollapseMode()" style="color:#ff5050; background:rgba(255,80,80,0.1);">
                         <i class="fas fa-times"></i>
@@ -773,6 +770,13 @@
                         <button class="theme-color-btn" id="theme-ocean" data-theme="ocean" title="深蓝"></button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- 昼夜切换 - 迁移自顶栏 -->
+        <div style="border:1px solid var(--border-color);border-radius:14px;overflow:hidden;margin:8px 0;">
+            <div class="setting-pill-row" id="theme-toggle" style="cursor:pointer;">
+                <span class="setting-pill-icon"><i class="fas fa-moon" id="theme-toggle-icon"></i></span>
+                <span class="setting-pill-label">昼夜切换 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">切换明亮/深色主题</span></span>
             </div>
         </div>
         <div class="settings-section" id="theme-schemes-section">
@@ -1460,6 +1464,14 @@
                             <i class="fas fa-chevron-right" style="color:var(--text-secondary);font-size:12px;flex-shrink:0;"></i>
                         </div>
                     </div>
+                    <!-- 唯一/并蓄 焦点模式切换 -->
+                    <div style="display:flex;flex-direction:column;align-items:center;margin-top:16px;padding-bottom:4px;">
+                        <div class="focus-mode-selector" id="focus-mode-selector">
+                            <div class="focus-mode-opt" id="focus-mode-unique" onclick="window.setFocusMode('unique')">唯一</div>
+                            <div class="focus-mode-opt focus-mode-opt-active" id="focus-mode-together" onclick="window.setFocusMode('together')">并蓄</div>
+                        </div>
+                    </div>
+                    <div class="focus-mode-text" id="focus-mode-text">爱如繁星，每一颗都熠熠生辉。</div>
                 </div>
 
                 <div class="cs-panel" id="cs-panel-names">

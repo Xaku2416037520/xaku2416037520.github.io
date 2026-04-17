@@ -830,7 +830,8 @@ function manageAutoSendTimer() {
             }
 
             DOMElements.html.setAttribute('data-theme', settings.isDarkMode ? 'dark': 'light');
-            DOMElements.themeToggle.innerHTML = settings.isDarkMode ? '<i class="fas fa-sun"></i>': '<i class="fas fa-moon"></i>';
+            const _themeIcon = document.getElementById('theme-toggle-icon');
+            if (_themeIcon) _themeIcon.className = settings.isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
             DOMElements.partner.name.textContent = settings.partnerName;
             DOMElements.me.name.textContent = settings.myName;
             DOMElements.partner.status.textContent = settings.partnerStatus || '在线';

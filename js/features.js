@@ -1613,3 +1613,47 @@ window.tryShowDailyGreeting = function() {
     } catch(e) { console.warn('Daily greeting show error:', e); }
 };
 
+/* ===== 唯一/并蓄 焦点模式 ===== */
+(function() {
+    var STORAGE_KEY = 'focusMode_v1';
+
+    function applyFocusMode(mode) {
+        var isUnique = mode === 'unique';
+        document.body.classList.toggle('unique-mode', isUnique);
+
+        var optUnique = document.getElementById('focus-mode-unique');
+        var optTogether = document.getElementById('focus-mode-together');
+        if (!optUnique || !optTogether) return;
+
+        optUnique.classList.toggle('focus-mode-opt-active', isUnique);
+        optTogether.classList.toggle('focus-mode-opt-active', !isUnique);
+        optUnique.textContent = isUnique ? '唯一' : '◎';
+        optTogether.textContent = isUnique ? '✧' : '并蓄';
+    }
+
+    window.setFocusMode = function(mode) {
+        var textEl = document.getElementById('focus-mode-text');
+        if (textEl) {
+            textEl.classList.add('fading');
+            setTimeout(function() {
+                textEl.textContent = mode === 'unique'
+                    ? '世界喧嚣，我只听你的呼吸。'
+                    : '爱如繁星，每一颗都熠熠生辉。';
+                textEl.classList.remove('fading');
+            }, 350);
+        }
+        applyFocusMode(mode);
+        localStorage.setItem(STORAGE_KEY, mode);
+    };
+
+    /* 恢复上次状态 */
+    var saved = localStorage.getItem(STORAGE_KEY) || 'together';
+    applyFocusMode(saved);
+    var initText = document.getElementById('focus-mode-text');
+    if (initText) {
+        initText.textContent = saved === 'unique'
+            ? '世界喧嚣，我只听你的呼吸。'
+            : '爱如繁星，每一颗都熠熠生辉。';
+    }
+})();
+

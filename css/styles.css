@@ -11985,3 +11985,55 @@
             margin-bottom: 8px;
             opacity: 0.4;
         }
+
+/* ===== 唯一/并蓄 焦点模式 ===== */
+.focus-mode-selector {
+    display: flex;
+    width: 33.33%;
+    min-width: 120px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1.5px solid var(--border-color);
+    background: var(--primary-bg);
+}
+.focus-mode-opt {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    transition: background 0.28s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.28s;
+    color: var(--text-secondary);
+    user-select: none;
+    border-radius: 999px;
+}
+.focus-mode-opt-active {
+    background: var(--accent-color);
+    color: #fff;
+    font-weight: 600;
+}
+.focus-mode-text {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    opacity: 1;
+    transition: opacity 0.35s ease;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    text-align: center;
+    padding: 0 16px;
+}
+.focus-mode-text.fading {
+    opacity: 0;
+}
+
+/* 唯一模式：隐藏三个面板 */
+body.unique-mode #dc-icon-rail,
+body.unique-mode #dc-sidebar,
+body.unique-mode #dc-mobile-open-btn {
+    display: none !important;
+}
+body.unique-mode .input-area-wrapper {
+    left: 0 !important;
+}
