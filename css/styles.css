@@ -6083,24 +6083,24 @@
         }
 
         .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             padding: 10px 5px;
         }
 
         .settings-card {
             background-color: var(--primary-bg);
             border-radius: var(--radius);
-            padding: 25px 15px;
+            padding: 14px 20px;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 1px solid var(--border-color);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            justify-content: flex-start;
+            gap: 14px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
@@ -6116,16 +6116,17 @@
 
 
         .settings-card i {
-            font-size: 28px;
+            font-size: 20px;
             color: var(--accent-color);
-            width: 64px;
-            height: 64px;
+            width: 44px;
+            height: 44px;
             background-color: rgba(var(--accent-color-rgb), 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 5px;
+            margin-bottom: 0;
+            flex-shrink: 0;
             transition: all 0.4s ease;
         }
 
@@ -8792,6 +8793,11 @@
         .system-message + .message-wrapper.discord-msg-first {
             margin-top: 0 !important;
         }
+        /* discord 布局下系统消息紧缩 margin，确保下方间距 ≤ 上方间距 */
+        .system-message {
+            margin-top: 8px !important;
+            margin-bottom: 2px !important;
+        }
 
         /* 移动端 */
         @media (max-width: 480px) {
@@ -8867,6 +8873,7 @@
         body.my-messages-left .message-wrapper.sent.has-reply > .message-avatar {
             grid-column: 1 !important;
             grid-row: 2 !important;
+            justify-self: start !important;
         }
         body.my-messages-left .message-wrapper.sent.has-reply > .message-content-wrapper {
             grid-column: 2 !important;
@@ -9030,8 +9037,8 @@
             content: '';
             position: absolute;
             left: calc(var(--in-chat-avatar-size, 36px) / 2 - 1px);
-            top: 50%;
-            bottom: 0;
+            top: 15%;
+            bottom: 4px;
             width: calc(var(--in-chat-avatar-size, 36px) / 2 + 10px - 2px);
             border-left: 2px solid var(--accent-color);
             border-top: 2px solid var(--accent-color);
