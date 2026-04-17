@@ -11986,6 +11986,19 @@
             opacity: 0.4;
         }
 
+/* ===== 顶栏视频通话按钮：覆盖 call.js 注入的背景色 ===== */
+.header-actions #call-toolbar-btn {
+    background-color: transparent !important;
+    background: none !important;
+}
+.header-actions #call-toolbar-btn:hover {
+    background-color: var(--message-received-bg) !important;
+    color: var(--text-primary) !important;
+}
+body.bottom-collapse-mode .header-actions #call-toolbar-btn {
+    display: flex !important;
+}
+
 /* ===== 唯一/并蓄 焦点模式 ===== */
 .focus-mode-selector {
     display: flex;
