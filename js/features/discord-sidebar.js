@@ -349,9 +349,13 @@
         const rail    = document.getElementById('dc-icon-rail');
         const sidebar = document.getElementById('dc-sidebar');
         const overlay = document.getElementById('dc-mobile-overlay');
-        if (rail)    rail.classList.remove('dc-mobile-open');
-        if (sidebar) sidebar.classList.remove('dc-mobile-open');
+        if (rail)    { rail.classList.remove('dc-mobile-open'); rail.classList.add('dc-mobile-closing'); }
+        if (sidebar) { sidebar.classList.remove('dc-mobile-open'); sidebar.classList.add('dc-mobile-closing'); }
         if (overlay) overlay.classList.remove('dc-mobile-overlay-show');
+        setTimeout(() => {
+            if (rail)    rail.classList.remove('dc-mobile-closing');
+            if (sidebar) sidebar.classList.remove('dc-mobile-closing');
+        }, 230);
     }
 
     /* ───────────────────────────────────────────────
@@ -418,9 +422,16 @@
             }
         });
 
-        // 移动端：左箭头打开侧栏
+        // 左箭头按钮：切换侧栏开/关（所有屏幕尺寸）
         const mobileOpenBtn = document.getElementById('dc-mobile-open-btn');
-        if (mobileOpenBtn) mobileOpenBtn.addEventListener('click', _openMobileSidebar);
+        if (mobileOpenBtn) mobileOpenBtn.addEventListener('click', () => {
+            const rail = document.getElementById('dc-icon-rail');
+            if (rail && rail.classList.contains('dc-mobile-open')) {
+                _closeMobileSidebar();
+            } else {
+                _openMobileSidebar();
+            }
+        });
 
         // 移动端：遮罩点击关闭侧栏
         const overlay = document.getElementById('dc-mobile-overlay');
