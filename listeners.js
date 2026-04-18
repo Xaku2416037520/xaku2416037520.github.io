@@ -72,7 +72,7 @@ function initChatActionListeners() {
                     }
                     return;
                 }
-                
+
                 const wrapper = e.target.closest('.message-wrapper');
                 if (!wrapper) return; 
                 
@@ -2397,11 +2397,32 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
 
             DOMElements.messageInput.addEventListener('input', _updateInputExpand);
 
+            // ── 键盘弹出时自动滚动聊天到底部 ──
+            // visualViewport.resize 是移动端键盘弹出/收起最可靠的检测方式
+            function _scrollChatToBottom() {
+                const c = DOMElements.chatContainer;
+                if (!c) return;
+                // 只在用户已接近底部时才强制滚底，避免打断用户向上翻阅历史
+                const isNearBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 120;
+                if (isNearBottom) {
+                    c.scrollTop = c.scrollHeight;
+                }
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', _scrollChatToBottom);
+            }
+            // 输入框获得焦点时也立即滚底（兜底：部分安卓不触发 visualViewport resize）
+            DOMElements.messageInput.addEventListener('focus', () => {
+                setTimeout(_scrollChatToBottom, 100); // 稍作延迟等键盘动画完成
+            });
+
             // 发送后重置高度与按钮状态（带动画：先让输入框收缩，再显示按钮）
             function _resetInputAfterSend() {
                 const input = DOMElements.messageInput;
-                // 立即退出输入状态（收起键盘）
-                input.blur();
+                // 用 setTimeout(0) 确保在 sendMessage() 所有同步逻辑（含 focus）执行完后再 blur
+                // 这样键盘不会出现"关了又弹回来"的闪烁
+                setTimeout(() => input.blur(), 0);
+
                 // 立即禁用 overflowY 避免滚动条闪烁
                 input.style.overflowY = 'hidden';
                 // 用过渡动画收回到单行高度
