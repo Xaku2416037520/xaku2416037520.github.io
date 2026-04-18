@@ -1287,7 +1287,8 @@
             flex-direction: column;
             border-left: 3px solid var(--accent-color);
             padding: 5px 10px 5px 9px;
-            margin-bottom: 7px;
+            margin-top: 1.4px;
+            margin-bottom: 4.2px;
             background-color: rgba(var(--primary-bg-rgb), 0.55);
             border-radius: 0 8px 8px 0;
             cursor: pointer;
@@ -9035,8 +9036,8 @@
             content: '';
             position: absolute;
             left: calc(var(--in-chat-avatar-size, 36px) / 2 - 1px);
-            top: 15%;
-            bottom: 4px;
+            top: calc(15% + 3px);
+            bottom: 11px;
             width: calc(var(--in-chat-avatar-size, 36px) / 2 + 10px - 2px);
             border-left: 2px solid var(--accent-color);
             border-top: 2px solid var(--accent-color);
@@ -9098,6 +9099,13 @@
             white-space: nowrap;
             flex-shrink: 0;
             line-height: 1.2;
+        }
+        .discord-reply-at {
+            font-size: calc(var(--font-size, 16px) * 0.5625);
+            font-weight: 600;
+            color: var(--accent-color);
+            opacity: 0.75;
+            margin-right: 1px;
         }
         .discord-reply-text {
             font-size: calc(var(--font-size, 16px) * 0.5625);

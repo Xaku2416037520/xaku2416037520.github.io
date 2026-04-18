@@ -1189,7 +1189,7 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
             <div class="discord-reply-line-col"></div>
             <div class="discord-reply-content">
                 <div class="discord-reply-avatar ${replyShapeClass}">${replyAvatarHTML}</div>
-                <span class="discord-reply-sender">${repliedSender}</span>
+                <span class="discord-reply-sender"><span class="discord-reply-at">@</span>${repliedSender}</span>
                 <span class="discord-reply-text">${repliedText}</span>
             </div>`;
         // ── 关键：将 replyBar 插入到 wrapper 的最前面（avatarDiv 之前），
