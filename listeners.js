@@ -2398,29 +2398,25 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
             DOMElements.messageInput.addEventListener('input', _updateInputExpand);
 
             // ── 键盘弹出时自动滚动聊天到底部 ──
-            // visualViewport.resize 是移动端键盘弹出/收起最可靠的检测方式
             function _scrollChatToBottom() {
                 const c = DOMElements.chatContainer;
                 if (!c) return;
-                // 只在用户已接近底部时才强制滚底，避免打断用户向上翻阅历史
                 const isNearBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 120;
-                if (isNearBottom) {
-                    c.scrollTop = c.scrollHeight;
-                }
+                if (isNearBottom) c.scrollTop = c.scrollHeight;
             }
             if (window.visualViewport) {
                 window.visualViewport.addEventListener('resize', _scrollChatToBottom);
             }
-            // 输入框获得焦点时也立即滚底（兜底：部分安卓不触发 visualViewport resize）
             DOMElements.messageInput.addEventListener('focus', () => {
-                setTimeout(_scrollChatToBottom, 100); // 稍作延迟等键盘动画完成
+                setTimeout(_scrollChatToBottom, 100);
             });
 
             // 发送后重置高度与按钮状态（带动画：先让输入框收缩，再显示按钮）
             function _resetInputAfterSend() {
                 const input = DOMElements.messageInput;
-                // 用 setTimeout(0) 确保在 sendMessage() 所有同步逻辑（含 focus）执行完后再 blur
-                // 这样键盘不会出现"关了又弹回来"的闪烁
+
+                // setTimeout(0)：等 sendMessage() 所有同步代码执行完后再 blur，
+                // 防止 sendMessage 内部的同步逻辑抢回焦点，造成键盘闪烁
                 setTimeout(() => input.blur(), 0);
 
                 // 立即禁用 overflowY 避免滚动条闪烁
@@ -2430,6 +2426,11 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
                 const lineHeight = parseFloat(cs.lineHeight) || 22;
                 const paddingV = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
                 const singleLineH = Math.round(lineHeight + paddingV);
+                // 先强制确认当前高度为 px 值，让 transition 有起点
+                input.style.transition = 'none';
+                input.style.height = input.offsetHeight + 'px';
+                input.style.transition = '';
+                void input.offsetHeight;
                 input.style.height = singleLineH + 'px';
 
                 // 过渡结束后清理内联样式，同时恢复按钮
@@ -2437,7 +2438,7 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
                     input.style.height = '';
                     _inputWasTyping = false;
                     _inputExpandTargets.forEach(btn => btn.classList.remove('input-typing-hidden'));
-                }, 220); // 与 transition duration 对齐
+                }, 220);
             }
             DOMElements.sendBtn.addEventListener('click', _resetInputAfterSend);
             DOMElements.messageInput.addEventListener('keydown', e => {
