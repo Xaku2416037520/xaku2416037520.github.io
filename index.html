@@ -23,34 +23,24 @@
     <link rel="stylesheet" href="css/styles.css">
 
     <style id="input-expand-style">
-        /* ── 输入框高度过渡 ── */
+        /* ── 输入框高度过渡（向上自然延伸）── */
         #message-input {
-            transition: height 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: height 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             resize: none;
             overflow-y: hidden;
+            /* 横向换行：撑满容器宽度，超过一行宽度后自动折行 */
+            overflow-x: hidden;
             box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+            white-space: pre-wrap;   /* 保留换行，超宽自动折行 */
+            word-break: break-all;   /* 强制在任意字符处换行，防止溢出 */
+            overflow-wrap: break-word;
+            will-change: height;
+            min-height: 0;
         }
 
-        /* ── 输入时隐藏左侧三个工具按钮 ── */
-        .input-typing-hidden {
-            opacity: 0 !important;
-            transform: scale(0.6) !important;
-            max-width: 0 !important;
-            min-width: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-            transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-                        max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                        min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                        margin 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                        padding 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-
-        /* 非隐藏状态也加过渡，保证恢复时有动效 */
-        #advanced-functions-btn,
+        /* ── 输入时隐藏左侧两个工具按钮（带收缩动画）── */
         #attachment-btn,
         #combo-btn {
             transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
@@ -62,6 +52,26 @@
                         background 0.2s, color 0.2s, box-shadow 0.2s;
             transform-origin: left center;
             overflow: hidden;
+            /* 正常状态：确保有明确的初始值，便于 transition 插值 */
+            opacity: 1;
+            max-width: 48px;   /* 与按钮实际宽度对齐，根据实际调整 */
+        }
+
+        /* 收起状态 */
+        .input-typing-hidden {
+            opacity: 0 !important;
+            transform: scale(0.6) !important;
+            max-width: 0 !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }
+
+        /* 礼物盒保持自身交互过渡，不参与输入时的隐藏逻辑 */
+        #advanced-functions-btn {
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, opacity 0.2s;
         }
     </style>
     <style id="css-live-preview-style"></style>

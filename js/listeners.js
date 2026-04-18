@@ -2344,9 +2344,8 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
                 }
             });
 
-            // ── 输入框动态扩展 + 左侧工具栏自动隐藏 ──
+            // ── 输入框动态扩展 + 左侧工具栏自动隐藏（礼物盒保留）──
             const _inputExpandTargets = [
-                document.getElementById('advanced-functions-btn'),
                 document.getElementById('attachment-btn'),
                 document.getElementById('combo-btn')
             ].filter(Boolean);
@@ -2355,40 +2354,61 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
 
             function _updateInputExpand() {
                 const input = DOMElements.messageInput;
-                const lineHeight = parseFloat(getComputedStyle(input).lineHeight) || 22;
-                const paddingV = parseFloat(getComputedStyle(input).paddingTop) + parseFloat(getComputedStyle(input).paddingBottom) || 12;
-                const maxHeight = Math.round(lineHeight * 8 + paddingV);
+                const cs = getComputedStyle(input);
+                const lineHeight = parseFloat(cs.lineHeight) || 22;
+                const paddingV = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+                // 超过4行后开启内部滚动，最多显示4行
+                const maxRows = 4;
+                const maxHeight = Math.round(lineHeight * maxRows + paddingV);
 
+                // ── 正确的动画技巧：px → px 才能触发 CSS transition ──
+                // 1. 记录当前渲染高度（px）
+                const currentHeight = input.offsetHeight;
+                // 2. 临时禁用过渡 + 设为 auto，读取内容真实高度
+                input.style.transition = 'none';
                 input.style.height = 'auto';
-                const newHeight = Math.min(input.scrollHeight, maxHeight);
+                const scrollH = input.scrollHeight;
+                const newHeight = Math.min(scrollH, maxHeight);
+                // 3. 还原到旧高度（px），此时 transition 还是 none
+                input.style.height = currentHeight + 'px';
+                // 4. 移除内联 transition，让 CSS 样式表的过渡接管
+                input.style.transition = '';
+                // 5. 强制浏览器回流，确认旧高度已被登记
+                void input.offsetHeight;
+                // 6. 设置新高度，CSS transition 从旧 px → 新 px，动画生效
                 input.style.height = newHeight + 'px';
-                input.style.overflowY = input.scrollHeight > maxHeight ? 'auto' : 'hidden';
+                // 超过4行后启用内部滚动
+                input.style.overflowY = scrollH > maxHeight ? 'auto' : 'hidden';
 
                 const hasText = input.value.length > 0;
-
                 if (hasText !== _inputWasTyping) {
                     _inputWasTyping = hasText;
                     _inputExpandTargets.forEach(btn => {
-                        if (hasText) {
-                            btn.classList.add('input-typing-hidden');
-                        } else {
-                            btn.classList.remove('input-typing-hidden');
-                        }
+                        btn.classList.toggle('input-typing-hidden', hasText);
                     });
                 }
             }
 
             DOMElements.messageInput.addEventListener('input', _updateInputExpand);
 
-            // 发送后重置高度与按钮状态
-            const _origSendBtnClick = DOMElements.sendBtn.onclick;
+            // 发送后重置高度与按钮状态（带动画：先让输入框收缩，再显示按钮）
             function _resetInputAfterSend() {
+                const input = DOMElements.messageInput;
+                // 立即禁用 overflowY 避免滚动条闪烁
+                input.style.overflowY = 'hidden';
+                // 用过渡动画收回到单行高度
+                const cs = getComputedStyle(input);
+                const lineHeight = parseFloat(cs.lineHeight) || 22;
+                const paddingV = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+                const singleLineH = Math.round(lineHeight + paddingV);
+                input.style.height = singleLineH + 'px';
+
+                // 过渡结束后清理内联样式，同时恢复按钮
                 setTimeout(() => {
-                    DOMElements.messageInput.style.height = '';
-                    DOMElements.messageInput.style.overflowY = 'hidden';
+                    input.style.height = '';
                     _inputWasTyping = false;
                     _inputExpandTargets.forEach(btn => btn.classList.remove('input-typing-hidden'));
-                }, 30);
+                }, 220); // 与 transition duration 对齐
             }
             DOMElements.sendBtn.addEventListener('click', _resetInputAfterSend);
             DOMElements.messageInput.addEventListener('keydown', e => {
