@@ -4151,6 +4151,15 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+        /* 在 Discord 侧栏布局下，通知居中于聊天区域而非整个视口
+           聊天区中心 = dc-total-left + (100vw - dc-total-left) / 2
+                      = dc-total-left/2 + 50vw
+           所以 left 向右偏移 dc-total-left/2，再配合 translateX(-50%) 即可 */
+        @media (min-width: 769px) {
+            .notification {
+                left: calc(var(--dc-total-left, 0px) / 2 + 50%);
+            }
+        }
         .notification.success {
             border-color: rgba(100,200,120,0.35);
             background: linear-gradient(135deg, var(--secondary-bg) 80%, rgba(100,200,120,0.07));
@@ -4171,7 +4180,6 @@
                 opacity: 0;
                 transform: translateX(-50%) translateY(-20px);
             }
-
             to {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
@@ -4185,7 +4193,6 @@
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
             }
-
             to {
                 opacity: 0;
                 transform: translateX(-50%) translateY(-20px);
@@ -5530,6 +5537,11 @@
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: flex-end;
+            position: sticky;
+            bottom: 0;
+            background: var(--secondary-bg);
+            padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
+            z-index: 1;
         }
         
         
