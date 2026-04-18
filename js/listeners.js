@@ -65,7 +65,13 @@ function initChatActionListeners() {
                 }
 
                 const target = e.target.closest('.meta-action-btn');
-                if (!target) return;
+                if (!target) {
+                    // 点击消息区域（底栏外部）时收起键盘
+                    if (DOMElements.messageInput && document.activeElement === DOMElements.messageInput) {
+                        DOMElements.messageInput.blur();
+                    }
+                    return;
+                }
                 
                 const wrapper = e.target.closest('.message-wrapper');
                 if (!wrapper) return; 
@@ -2408,6 +2414,8 @@ playlist.style.top = (rect.top + (player.classList.contains('collapsed') ? 65 : 
                     input.style.height = '';
                     _inputWasTyping = false;
                     _inputExpandTargets.forEach(btn => btn.classList.remove('input-typing-hidden'));
+                    // 发送后重新聚焦，保持键盘显示状态
+                    input.focus();
                 }, 220); // 与 transition duration 对齐
             }
             DOMElements.sendBtn.addEventListener('click', _resetInputAfterSend);
