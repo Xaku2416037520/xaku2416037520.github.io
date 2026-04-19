@@ -2129,12 +2129,31 @@ function showModal(modalElement, focusElement = null) {
                     }
                     if (inclReplies)  {
                         exportObj.customReplies = customReplies;
-                        if (customEmojis && customEmojis.length > 0) exportObj.customEmojis = customEmojis;
+                        if (customEmojis    && customEmojis.length    > 0) exportObj.customEmojis    = customEmojis;
+                        // 氛围感：拍一拍 / 状态 / 格言 / 开场动画
+                        if (customPokes     && customPokes.length     > 0) exportObj.customPokes     = customPokes;
+                        if (customStatuses  && customStatuses.length  > 0) exportObj.customStatuses  = customStatuses;
+                        if (customMottos    && customMottos.length    > 0) exportObj.customMottos    = customMottos;
+                        if (customIntros    && customIntros.length    > 0) exportObj.customIntros    = customIntros;
+                        // 分组数据
+                        if (window.customReplyGroups  && window.customReplyGroups.length  > 0) exportObj.customReplyGroups  = window.customReplyGroups;
+                        if (window.customPokeGroups   && window.customPokeGroups.length   > 0) exportObj.customPokeGroups   = window.customPokeGroups;
+                        if (window.customStatusGroups && window.customStatusGroups.length > 0) exportObj.customStatusGroups = window.customStatusGroups;
+                        // 拍一拍装饰符号（localStorage）
+                        const _pokeSymKeys = ['pokeSym_my','pokeSym_partner','pokeSym_my_custom','pokeSym_partner_custom',
+                                              'pokeSym_my_cust_left','pokeSym_my_cust_right','pokeSym_ptr_cust_left','pokeSym_ptr_cust_right'];
+                        const _pokeSymData = {};
+                        _pokeSymKeys.forEach(k => { const v = localStorage.getItem(k); if (v !== null) _pokeSymData[k] = v; });
+                        if (Object.keys(_pokeSymData).length) exportObj.pokeSymbols = _pokeSymData;
+                        // 我的表情库
+                        if (myStickerLibrary && myStickerLibrary.length > 0) exportObj.myStickerLibrary = myStickerLibrary;
                         exportObj.exportModules.push('customReplies');
                     }
                     if (inclAnn)      { exportObj.anniversaries = anniversaries; exportObj.exportModules.push('anniversaries'); }
                     if (inclThemes)   {
                         exportObj.customThemes = customThemes;
+                        // 主题方案
+                        if (themeSchemes && themeSchemes.length > 0) exportObj.themeSchemes = themeSchemes;
                         // stickerLibrary 体积较大，这里不再随聊天备份导出
                         exportObj.exportModules.push('themes');
                     }
@@ -2251,11 +2270,39 @@ function showModal(modalElement, focusElement = null) {
                         const emojis = parseVal(getVal('customEmojis'));
                         if (Array.isArray(emojis)) converted.customEmojis = emojis;
 
+                        // 氛围感数据
+                        const pokes = parseVal(getVal('customPokes'));
+                        if (Array.isArray(pokes)) converted.customPokes = pokes;
+                        const statuses = parseVal(getVal('customStatuses'));
+                        if (Array.isArray(statuses)) converted.customStatuses = statuses;
+                        const mottos = parseVal(getVal('customMottos'));
+                        if (Array.isArray(mottos)) converted.customMottos = mottos;
+                        const intros = parseVal(getVal('customIntros'));
+                        if (Array.isArray(intros)) converted.customIntros = intros;
+                        const replyGroups = parseVal(getVal('customReplyGroups'));
+                        if (Array.isArray(replyGroups)) converted.customReplyGroups = replyGroups;
+                        const pokeGroups = parseVal(getVal('customPokeGroups'));
+                        if (Array.isArray(pokeGroups)) converted.customPokeGroups = pokeGroups;
+                        const statusGroups = parseVal(getVal('customStatusGroups'));
+                        if (Array.isArray(statusGroups)) converted.customStatusGroups = statusGroups;
+                        // 拍一拍装饰符号
+                        const _pskKeys = ['pokeSym_my','pokeSym_partner','pokeSym_my_custom','pokeSym_partner_custom',
+                                          'pokeSym_my_cust_left','pokeSym_my_cust_right','pokeSym_ptr_cust_left','pokeSym_ptr_cust_right'];
+                        const _pskData = {};
+                        _pskKeys.forEach(k => { const v = ls[k]; if (v !== undefined && v !== null) _pskData[k] = v; });
+                        if (Object.keys(_pskData).length) converted.pokeSymbols = _pskData;
+                        // 我的表情库
+                        const myStickers = parseVal(getVal('myStickerLibrary'));
+                        if (Array.isArray(myStickers)) converted.myStickerLibrary = myStickers;
+
                         const ann = parseVal(getVal('anniversaries'));
                         if (Array.isArray(ann)) { converted.anniversaries = ann; converted.exportModules.push('anniversaries'); }
 
                         const themes = parseVal(allKv[appPfx + 'customThemes'] !== undefined ? allKv[appPfx + 'customThemes'] : (ls[appPfx + 'customThemes'] || null));
                         if (themes) { converted.customThemes = themes; converted.exportModules.push('themes'); }
+                        // 主题方案
+                        const tSchemes = parseVal(allKv[appPfx + 'themeSchemes'] !== undefined ? allKv[appPfx + 'themeSchemes'] : (ls[appPfx + 'themeSchemes'] || null));
+                        if (Array.isArray(tSchemes)) converted.themeSchemes = tSchemes;
 
                         importedData = converted;
                     }
@@ -2342,9 +2389,26 @@ function showModal(modalElement, focusElement = null) {
                             if (importedData.customWeatherMap) { try { Object.keys(importedData.customWeatherMap).forEach(wk => localStorage.setItem(wk, importedData.customWeatherMap[wk])); } catch(e2) {} }
                         }
                         if (doReplies  && importedData.customReplies)  customReplies  = importedData.customReplies;
-                        if (doReplies  && importedData.customEmojis && Array.isArray(importedData.customEmojis)) customEmojis = importedData.customEmojis;
+                        if (doReplies  && importedData.customEmojis   && Array.isArray(importedData.customEmojis))   customEmojis   = importedData.customEmojis;
+                        // 氛围感：拍一拍 / 状态 / 格言 / 开场动画
+                        if (doReplies  && importedData.customPokes    && Array.isArray(importedData.customPokes))    customPokes    = importedData.customPokes;
+                        if (doReplies  && importedData.customStatuses && Array.isArray(importedData.customStatuses)) customStatuses = importedData.customStatuses;
+                        if (doReplies  && importedData.customMottos   && Array.isArray(importedData.customMottos))   customMottos   = importedData.customMottos;
+                        if (doReplies  && importedData.customIntros   && Array.isArray(importedData.customIntros))   customIntros   = importedData.customIntros;
+                        // 分组数据
+                        if (doReplies  && importedData.customReplyGroups)   window.customReplyGroups   = importedData.customReplyGroups;
+                        if (doReplies  && importedData.customPokeGroups)    window.customPokeGroups    = importedData.customPokeGroups;
+                        if (doReplies  && importedData.customStatusGroups)  window.customStatusGroups  = importedData.customStatusGroups;
+                        // 拍一拍装饰符号（localStorage）
+                        if (doReplies  && importedData.pokeSymbols) {
+                            try { Object.keys(importedData.pokeSymbols).forEach(k => localStorage.setItem(k, importedData.pokeSymbols[k])); } catch(e2) { console.warn('pokeSymbols 恢复失败', e2); }
+                        }
+                        // 我的表情库
+                        if (doReplies  && importedData.myStickerLibrary && Array.isArray(importedData.myStickerLibrary)) myStickerLibrary = importedData.myStickerLibrary;
                         if (doAnn      && importedData.anniversaries)   anniversaries  = importedData.anniversaries;
                         if (doThemes   && importedData.customThemes)    customThemes   = importedData.customThemes;
+                        // 主题方案
+                        if (doThemes   && importedData.themeSchemes   && Array.isArray(importedData.themeSchemes))   themeSchemes   = importedData.themeSchemes;
                         if (doThemes   && importedData.stickerLibrary)  stickerLibrary = importedData.stickerLibrary;
 
                         saveData();

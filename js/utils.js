@@ -460,14 +460,15 @@ async function importAllData(file) {
             {
                 id: 'chat',
                 label: '聊天记录 / 会话 / 红包',
-                indexedDBNeedles: ['chatMessages', 'sessionList', 'chatSettings', 'showPartnerNameInChat', 'envelopeData', 'pending_envelope'],
+                indexedDBNeedles: ['chatMessages', 'sessionList', 'chatSettings', 'showPartnerNameInChat', 'envelopeData', 'pending_envelope', 'gca_'],
                 localStorageNeedles: ['groupChatSettings']
             },
             {
                 id: 'replies',
                 label: '回复 / 拍一拍 / 氛围',
                 indexedDBNeedles: ['customReplies', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis', 'customReplyGroups', 'customPokeGroups', 'customStatusGroups'],
-                localStorageNeedles: ['disabledReplyItems', 'pokeSym_my', 'pokeSym_partner', 'pokeSym_my_custom', 'pokeSym_partner_custom']
+                localStorageNeedles: ['disabledReplyItems', 'pokeSym_my', 'pokeSym_partner', 'pokeSym_my_custom', 'pokeSym_partner_custom',
+                                      'pokeSym_my_cust_left', 'pokeSym_my_cust_right', 'pokeSym_ptr_cust_left', 'pokeSym_ptr_cust_right']
             },
             {
                 id: 'stickers',
@@ -489,15 +490,15 @@ async function importAllData(file) {
             },
             {
                 id: 'themes',
-                label: '主题 / 外观 / 图库',
-                indexedDBNeedles: ['customThemes', 'themeSchemes', 'backgroundGallery', 'chatBackground', 'partnerAvatar', 'myAvatar', 'partnerPersonas'],
-                localStorageNeedles: []
+                label: '主题 / 外观 / 图库 / 视频通话',
+                indexedDBNeedles: ['customThemes', 'themeSchemes', 'backgroundGallery', 'chatBackground', 'partnerAvatar', 'myAvatar', 'partnerPersonas', 'callBgImageData'],
+                localStorageNeedles: ['callFeatureEnabled', 'callWindowPos', 'callWindowSize', 'callPillPos']
             },
             {
                 id: 'dg',
                 label: '每日公告 / 运势 / 天气',
                 indexedDBNeedles: [],
-                localStorageNeedles: ['dg_custom_data', 'dg_status_pool', 'weekly_fortune', 'daily_fortune'],
+                localStorageNeedles: ['dg_custom_data', 'dg_status_pool', 'weekly_fortune', 'daily_fortune', 'dg_overlay_bg_tint'],
                 localStoragePrefixes: ['customWeather_']
             }
         ];

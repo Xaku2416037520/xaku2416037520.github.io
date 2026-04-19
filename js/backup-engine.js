@@ -179,13 +179,15 @@
         flags = flags || {};
         var p = [];
         if (!flags.inclStickers) p.push('stickerLibrary', 'myStickerLibrary');
-        if (!flags.inclThemes) p.push('backgroundGallery', 'chatBackground', 'partnerAvatar', 'myAvatar', 'playerCover');
+        if (!flags.inclThemes) p.push('backgroundGallery', 'chatBackground', 'partnerAvatar', 'myAvatar', 'playerCover', 'callBgImageData');
         if (!flags.inclMsgs) p.push('chatMessages');
         if (!flags.inclSet) p.push('chatSettings', 'partnerPersonas', 'showPartnerNameInChat');
-        if (!flags.inclCustom) p.push('customReplies', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis', 'customReplyGroups', 'customPokeGroups', 'customStatusGroups');
+        if (!flags.inclCustom) p.push('customReplies', 'customPokes', 'customStatuses', 'customMottos', 'customIntros', 'customEmojis',
+                                      'customReplyGroups', 'customPokeGroups', 'customStatusGroups',
+                                      'pokeSym_my_cust_left', 'pokeSym_my_cust_right', 'pokeSym_ptr_cust_left', 'pokeSym_ptr_cust_right');
         if (!flags.inclAnn) p.push('anniversaries');
         if (!flags.inclThemes) p.push('customThemes', 'themeSchemes');
-        if (!flags.inclDg) p.push('dg_custom_data', 'dg_status_pool', 'weekly_fortune', 'daily_fortune', 'customWeather_');
+        if (!flags.inclDg) p.push('dg_custom_data', 'dg_status_pool', 'weekly_fortune', 'daily_fortune', 'customWeather_', 'dg_overlay_bg_tint');
         return p;
     }
 

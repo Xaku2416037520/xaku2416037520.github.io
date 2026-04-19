@@ -8957,6 +8957,13 @@
         .message-wrapper.discord-msg-cont {
             margin-top: 0 !important;
         }
+        /* ── 气泡模式：连续消息之间保留最小间距，防止气泡重叠 ──
+           仅在非纯文本模式下生效；纯文本模式由下方 body.pure-text-mode 规则覆盖回 0，
+           两者完全隔离，互不干扰。
+           --bubble-cont-gap 默认 3px，可通过 JS 按需调整（当前未暴露到设置面板）。 */
+        body:not(.pure-text-mode) .message-wrapper.discord-msg-cont {
+            margin-top: var(--bubble-cont-gap, 6px) !important;
+        }
         /* 紧跟弹性占位 spacer 后面的第一条消息不需要顶部间距 */
         .chat-container > .message-wrapper:first-child,
         .chat-container > .chat-spacer + .message-wrapper {
@@ -9103,6 +9110,32 @@
             padding: 0 !important;
             min-width: unset !important;
             border: none !important;
+        }
+        /* 隐藏自定义气泡 CSS 中可能存在的 ::before / ::after 装饰（如小三角箭头等），
+           此规则优先级（body.pure-text-mode .message::after = 0,2,1 + !important）
+           高于用户自定义的 .message::after（0,1,0 + !important），可安全覆盖。
+           关闭纯文本模式后 body.pure-text-mode 类消失，自定义效果自动恢复。 */
+        body.pure-text-mode .message::before,
+        body.pure-text-mode .message::after {
+            display: none !important;
+            content: none !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        /* 纯文本模式：下部引用胶囊降级为轻量文本样式，去除气泡感，融入文字流 */
+        body.pure-text-mode .reply-inline-below {
+            background: transparent !important;
+            border: none !important;
+            border-left: 2px solid var(--accent-color) !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-radius: 0 !important;
+            padding: 0 6px !important;
+            margin-top: 2px !important;
+            margin-bottom: 2px !important;
+            opacity: 0.75 !important;
         }
         /* 组首间距统一使用 --msg-group-gap（与非纯文本模式共享同一个滑块） */
         body.pure-text-mode .message-wrapper.discord-msg-first {
