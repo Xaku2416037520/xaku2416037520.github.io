@@ -419,6 +419,17 @@ fileInput.addEventListener('change', function(e) {
             });
 
 
+window.setReplyBarStyle = function(style) {
+    settings.replyBarStyle = style;
+    throttledSaveData();
+    const topBtn = document.getElementById('reply-style-top');
+    const botBtn = document.getElementById('reply-style-bottom');
+    if (topBtn) { topBtn.className = style === 'top' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; topBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
+    if (botBtn) { botBtn.className = style === 'bottom' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; botBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
+    renderMessages();
+    showNotification('引用样式已更新', 'success');
+};
+
 window.setReadReceiptStyle = function(style) {
     settings.readReceiptStyle = style;
     throttledSaveData();
@@ -496,6 +507,11 @@ if (_chatSettingsEl) _chatSettingsEl.addEventListener('click', () => {
     const rrTextBtn = document.getElementById('rr-style-text');
     if (rrIconBtn) { rrIconBtn.className = rrStyle === 'icon' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rrIconBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
     if (rrTextBtn) { rrTextBtn.className = rrStyle === 'text' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rrTextBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
+    const rbStyle = settings.replyBarStyle || 'top';
+    const rbTopBtn = document.getElementById('reply-style-top');
+    const rbBotBtn = document.getElementById('reply-style-bottom');
+    if (rbTopBtn) { rbTopBtn.className = rbStyle === 'top' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rbTopBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
+    if (rbBotBtn) { rbBotBtn.className = rbStyle === 'bottom' ? 'modal-btn modal-btn-primary' : 'modal-btn modal-btn-secondary'; rbBotBtn.style.cssText = 'padding:5px 12px;font-size:12px;'; }
     
     showModal(DOMElements.chatModal.modal);
     setupAvatarFrameSettings();

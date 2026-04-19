@@ -147,6 +147,7 @@ function loadMoreHistory() {
                 typingIndicatorEnabled: true,
                 readReceiptsEnabled: true,
                 replyEnabled: true,
+                replyBarStyle: 'top',
                 lastStatusChange: Date.now(),
                 nextStatusChange: 1 + Math.random() * 7,
                 fontSize: 16,
@@ -877,6 +878,10 @@ function manageAutoSendTimer() {
                 item.classList.toggle('active', item.dataset.bubbleStyle === settings.bubbleStyle);
             });
 
+            // 同步 bubble 样式到 body class，供下部引用胶囊圆角联动使用
+            document.body.classList.remove('bubble-standard', 'bubble-rounded', 'bubble-rounded-large', 'bubble-square');
+            document.body.classList.add('bubble-' + (settings.bubbleStyle || 'standard'));
+
             const _pillSyncMap = {
                 '#reply-toggle': 'replyEnabled',
                 '#sound-toggle': 'soundEnabled',
@@ -1161,62 +1166,69 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
         }
     }
 
-    // ── Discord 风格引用栏：必须作为 grid 第一个子元素插入 wrapper ──
-    // 注意：replyBar 必须在 avatarDiv / contentWrapper 之前 insertBefore，
-    // 否则 grid-row:1 的 replyBar 在 DOM 里排第三，grid 布局会错乱。
+    // ── Discord 风格引用栏 / 下部胶囊引用 ──
+    // top 风格：必须作为 grid 第一个子元素插入 wrapper（replyBar insertBefore avatarDiv）
+    // bottom 风格：追加到 contentWrapper 末尾（气泡下方），不使用 grid 布局
     if (msg.replyTo) {
         const repliedText = msg.replyTo.text || (msg.replyTo.image ? '🖼 图片' : '[消息]');
         const repliedSender = msg.replyTo.sender === 'user' ? (settings.myName || '我') : (settings.partnerName || '对方');
+        const _replyBarStyle = settings.replyBarStyle || 'top';
 
-        // 被引用者头像形状：根据被引用者身份取对应 shape 设置
-        const replyShape = msg.replyTo.sender === 'user'
-            ? (settings.myAvatarShape || 'circle')
-            : (settings.partnerAvatarShape || 'circle');
-        const replyShapeClass = replyShape === 'square' ? 'discord-reply-avatar--square' : 'discord-reply-avatar--circle';
+        if (_replyBarStyle === 'top') {
+            // ── 风格：上部（Discord 折线式，显示在气泡上方）──
+            const replyShape = msg.replyTo.sender === 'user'
+                ? (settings.myAvatarShape || 'circle')
+                : (settings.partnerAvatarShape || 'circle');
+            const replyShapeClass = replyShape === 'square' ? 'discord-reply-avatar--square' : 'discord-reply-avatar--circle';
 
-        // 获取被引用者头像 HTML
-        let replyAvatarHTML = '';
-        if (msg.replyTo.sender === 'user') {
-            const meAvatarEl = DOMElements.me.avatar;
-            const meImg = meAvatarEl ? meAvatarEl.querySelector('img') : null;
-            if (meImg) {
-                replyAvatarHTML = `<img src="${meImg.src}" class="discord-reply-avatar-img">`;
-            } else {
-                const initial = (settings.myName || '我').charAt(0);
+            let replyAvatarHTML = '';
+            if (msg.replyTo.sender === 'user') {
+                const meAvatarEl = DOMElements.me.avatar;
+                const meImg = meAvatarEl ? meAvatarEl.querySelector('img') : null;
+                if (meImg) {
+                    replyAvatarHTML = `<img src="${meImg.src}" class="discord-reply-avatar-img">`;
+                } else {
+                    const initial = (settings.myName || '我').charAt(0);
+                    replyAvatarHTML = `<span class="discord-reply-avatar-initial">${initial}</span>`;
+                }
+            } else if (groupMember && groupMember.avatar) {
+                replyAvatarHTML = `<img src="${groupMember.avatar}" class="discord-reply-avatar-img">`;
+            } else if (groupMember) {
+                const initial = (groupMember.name || '?').charAt(0).toUpperCase();
                 replyAvatarHTML = `<span class="discord-reply-avatar-initial">${initial}</span>`;
-            }
-        } else if (groupMember && groupMember.avatar) {
-            replyAvatarHTML = `<img src="${groupMember.avatar}" class="discord-reply-avatar-img">`;
-        } else if (groupMember) {
-            const initial = (groupMember.name || '?').charAt(0).toUpperCase();
-            replyAvatarHTML = `<span class="discord-reply-avatar-initial">${initial}</span>`;
-        } else {
-            const partnerAvatarEl = DOMElements.partner.avatar;
-            const partnerImg = partnerAvatarEl ? partnerAvatarEl.querySelector('img') : null;
-            if (partnerImg) {
-                replyAvatarHTML = `<img src="${partnerImg.src}" class="discord-reply-avatar-img">`;
             } else {
-                const initial = (settings.partnerName || '对方').charAt(0);
-                replyAvatarHTML = `<span class="discord-reply-avatar-initial">${initial}</span>`;
+                const partnerAvatarEl = DOMElements.partner.avatar;
+                const partnerImg = partnerAvatarEl ? partnerAvatarEl.querySelector('img') : null;
+                if (partnerImg) {
+                    replyAvatarHTML = `<img src="${partnerImg.src}" class="discord-reply-avatar-img">`;
+                } else {
+                    const initial = (settings.partnerName || '对方').charAt(0);
+                    replyAvatarHTML = `<span class="discord-reply-avatar-initial">${initial}</span>`;
+                }
             }
+
+            const replyBar = document.createElement('div');
+            replyBar.className = 'discord-reply-bar';
+            replyBar.dataset.replyId = msg.replyTo.id || '';
+            replyBar.setAttribute('onclick', 'scrollToQuotedMessage(this)');
+            replyBar.innerHTML = `
+                <div class="discord-reply-line-col"></div>
+                <div class="discord-reply-content">
+                    <div class="discord-reply-avatar ${replyShapeClass}">${replyAvatarHTML}</div>
+                    <span class="discord-reply-sender"><span style="opacity:0.7;">@</span>${repliedSender}</span>
+                    <span class="discord-reply-text">${repliedText}</span>
+                </div>`;
+            wrapper.insertBefore(replyBar, avatarDiv);
+            wrapper.classList.add('has-reply');
         }
-
-        const replyBar = document.createElement('div');
-        replyBar.className = 'discord-reply-bar';
-        replyBar.dataset.replyId = msg.replyTo.id || '';
-        replyBar.setAttribute('onclick', 'scrollToQuotedMessage(this)');
-        replyBar.innerHTML = `
-            <div class="discord-reply-line-col"></div>
-            <div class="discord-reply-content">
-                <div class="discord-reply-avatar ${replyShapeClass}">${replyAvatarHTML}</div>
-                <span class="discord-reply-sender"><span style="opacity:0.7;">@</span>${repliedSender}</span>
-                <span class="discord-reply-text">${repliedText}</span>
-            </div>`;
-        // ── 关键：将 replyBar 插入到 wrapper 的最前面（avatarDiv 之前），
-        //    保证 grid 子元素顺序为 replyBar → avatarDiv → contentWrapper ──
-        wrapper.insertBefore(replyBar, avatarDiv);
-        wrapper.classList.add('has-reply');
+        // bottom 风格的 DOM 元素在 contentWrapper 完成后追加，见下方 _pendingReplyBelow 处理
     }
+    // 记录下部引用待追加信息（避免提前引用 contentWrapper 内容）
+    const _pendingReplyBelow = (msg.replyTo && (settings.replyBarStyle || 'top') === 'bottom')
+        ? { text: msg.replyTo.text || (msg.replyTo.image ? '🖼 图片' : '[消息]'),
+            sender: msg.replyTo.sender === 'user' ? (settings.myName || '我') : (settings.partnerName || '对方'),
+            id: msg.replyTo.id || '' }
+        : null;
 
     let messageHTML = '';
     const isImageOnly = !msg.text && !!msg.image;
@@ -1243,6 +1255,23 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
 
     // ── meta 行：已读回执已移入名字行，此处不再输出 ──
     contentWrapper.append(actionsDiv, messageDiv);
+
+    // ── 风格：下部（毛玻璃胶囊，气泡正下方）──
+    if (_pendingReplyBelow) {
+        const ribDiv = document.createElement('div');
+        ribDiv.className = 'reply-inline-below';
+        ribDiv.dataset.replyId = _pendingReplyBelow.id;
+        ribDiv.setAttribute('onclick', 'scrollToQuotedMessage(this)');
+        const senderSpan = document.createElement('span');
+        senderSpan.className = 'rib-sender';
+        senderSpan.textContent = _pendingReplyBelow.sender + '：';
+        const textSpan = document.createElement('span');
+        textSpan.className = 'rib-text';
+        textSpan.textContent = _pendingReplyBelow.text;
+        ribDiv.appendChild(senderSpan);
+        ribDiv.appendChild(textSpan);
+        contentWrapper.appendChild(ribDiv);
+    }
 
     // ── 气泡下方 meta（inlineTimestamp=false 时显示时间戳和已读）──
     if (settings.inlineTimestamp === false) {
